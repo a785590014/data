@@ -1,0 +1,18 @@
+* {
+  padding: 0;
+  margin: 0; }
+
+html, body {
+  height: 100%;
+  width: 100%;
+  font-family: 'Microsoft Yahei'; }
+
+a {
+  text-decoration: none; }
+
+input {
+  border: none;
+  background: none;
+  outline: none; }
+
+/*# sourceMappingURL=public.css.map */

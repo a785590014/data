@@ -1,0 +1,25 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+
+html, body{
+    height: 100%;
+    width: 100%;
+    font-family: 'Microsoft Yahei';
+}
+
+a{
+    text-decoration: none;
+}
+
+@mixin font($font,$color: #333){
+    font-size: $font;
+    color: $color;
+}
+
+input{
+    border: none;
+    background: none;
+    outline: none;
+}
