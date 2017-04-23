@@ -1,7 +1,6 @@
 $(function(){
-
     $(':checkbox:first').on('click',function(){
-        if($(':checkbox:first').is(':checked') == true){
+        if($(':checkbox:first').is(':checked')){
             $(":checkbox:gt(0)").attr('checked',true)
         }else{
             $(":checkbox").attr('checked',false)
@@ -16,11 +15,10 @@ $(function(){
         }
     });
 
-
-    function intHtml(json){
+    function html(json){
         var html_ =
-        '<tr title=" '+ json.id +' ">' +
-            '<td>'+ '<input type="checkbox" name="">' + json.id + '</td>'
+        '<tr title=" '+ json.id +' ">'
+            + '<td><input type="checkbox" name="" title="'+ json.id +'"><input class="test" type="text" value="'+ json.id +'"  disabled></td>'
             + '<td><input type="text" value="'+ json.type + '" disabled></td>'
             + '<td><input type="text" value="'+ json.title + '" disabled></td>'
             + '<td><input type="text" value="'+ json.class_ + '" disabled></td>'
@@ -32,15 +30,15 @@ $(function(){
          +'</tr>'
         return html_;
     }
-    function initPage(data){
+
+    function page(data){
         $('tbody').html('')
         $.each(data,function(key,val){
-            $('tbody').append(intHtml(val));
+            $('tbody').append(html(val));
         })
     }
 
-    initPage(data)
-
+    page(data)
 
     function dele(id,ind){
         for(var i = 0; i < data.length; i++){
@@ -50,10 +48,13 @@ $(function(){
             }
         }
     }
+
     $('body').on('click', '.del' , function(){
-        var ind = $(this).parent('td').parent('tr').index();
+        var index = $(this).index();
         var id = parseInt($(this).attr('title'));
-        dele(id,ind);
+        if(confirm('确认删除?')){
+            dele(id,index);
+        }
     })
 
     var id_ = null;
@@ -64,7 +65,8 @@ $(function(){
         }
     })
 
-    function refres(data,class_){
+
+    function appendData(data,class_){
         data.unshift({
             id: id_,
             type: $(class_.type).val(),
@@ -78,16 +80,43 @@ $(function(){
 
         $('.input input[type="text"]').val('');
 
-        initPage(data);
+        page(data);
     }
 
     $('.append').on('click',function(){
-        id_ += 1
-        refres(data,{id: id_,type: '.type',title:'.title',class_:'.class_',state:'.state',time:'.time',name:'.name',scholl:'.scholl'})
+        var ani =  $('.win').stop(true).animate({'top': 0});
+        var ani1 = $('.win').delay(2000).animate({'top': -30});
+        if($('.type').val() == ''){
+            ani.html('分类不为空');
+            ani1
+        }else if($('.title').val() == ''){
+            ani.html('标题不为空');
+            ani1
+        }else if($('.class_').val() == ''){
+            ani.html('班级不为空');
+            ani1
+        }else if($('.state').val() == ''){
+            ani.html('状态不为空');
+            ani1
+        }else if($('.time').val() == ''){
+            ani.html('时间不为空');
+            ani1
+        }else if($('.class_').val() == ''){
+            ani.html('创建者不为空');
+            ani1
+        }else if($('.scholl').val() == ''){
+            ani.html('分校区不为空');
+            ani1
+        }else{
+            ani.css('background','#00d000').html('提交成功');
+            ani1
+            id_ += 1
+            appendData(data,{id: id_,type: '.type',title:'.title',class_:'.class_',state:'.state',time:'.time',name:'.name',scholl:'.scholl'})
+        }
     })
 
-    function list(data,status,fun){
-        if(status){
+    $('.list').on('click',function(){
+        if($(this).hasClass('h')){
             var emp = null;
             for(var i = 0; i < data.length;i++){
                 for(var j = i + 1; j < data.length; j++){
@@ -98,6 +127,8 @@ $(function(){
                     }
                 }
             }
+            a = 1;
+            $(this).removeClass('h');
         }else{
             for(var i = 0; i < data.length;i++){
                 for(var j = i + 1; j < data.length; j++){
@@ -108,26 +139,11 @@ $(function(){
                     }
                 }
             }
-        }
-
-        fun();
-    }
-
-    $('.list').on('click',function(){
-        if($(this).hasClass('h')){
-            list(data,true,function(){
-                initPage(data);
-            })
-            $(this).removeClass('h');
-        }else{
-            list(data,false,function(){
-                initPage(data);
-            })
+            a = 0;
             $(this).addClass('h');
         }
+        initPage(data);
     })
-
-    $("tbody tr").eq(0).addClass("bg").siblings("tr").removeClass("bg");
 
     $(window).keydown(function(e){
         var key = e.keyCode;
@@ -149,15 +165,51 @@ $(function(){
             case 46:
                 var id = parseInt($("tbody tr.bg").attr("title"));
                 var index = $('tbody tr.bg').index();
-                dele(id,index);
+                if (confirm("确认删除?")) {
+                    dele(id,index);
+                }
+            break;
+            case 13:
+                var index = $('tbody tr.bg').index();
+                var ch = $(':checkbox:gt(0)').eq(index)
+                if(ch.attr('checked')){
+                    ch.prop('checked',false);
+                }else{
+                     ch.prop('checked',true);
+                }
             break;
         }
     })
-    $("body").on("click", "td", function(){
-        $(this).children("input[type=text]").removeAttr("disabled");
+
+    $("body").on('mouseover',"tbody tr",function(){
+        $(this).addClass("bg").siblings("tr").removeClass("bg");
     })
 
-    $("body").on("blur", "td", function(){
-        $(this).children("input").attr("disabled", true);
+    $("body").on("mousedown", "td :text", function(){
+        $(this).attr("disabled",false).parent().css('background','red');
+    })
+
+    $("body").on("blur", "td :text", function(){
+        $(this).attr("disabled", true).parent().css('background','none');
+    })
+
+    $('.dele').on('click',function(){
+        if (confirm("确认删除?")) {
+            if($(':checkbox:first').is(':checked')){
+                $('tbody').html('');
+                data = [];
+            }else{
+                $(":checkbox:gt(0)").each(function(){
+                    if ($(this).attr("checked")){
+                        for(var i = 0; i < data.length; i++){
+                            if(data[i].id == $(this).attr('title')){
+                                data.splice(i, 1);
+                            }
+                        }
+                        $(this).parent().parent().remove()
+                    }
+                })
+            }
+        }
     })
 })
